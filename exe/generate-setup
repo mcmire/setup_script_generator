@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/setup_script_generator/cli"
+
+SetupScriptGenerator::Cli.call(ARGV, STDOUT, STDERR)

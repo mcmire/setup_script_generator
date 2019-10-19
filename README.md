@@ -67,6 +67,11 @@ Finally, to see the full list of options, run:
 
 ## Development
 
+Naturally, this gem comes with its own setup script you can use to get started.
+Just run:
+
+    bin/setup
+
 To release a new version, update `version.rb`, then run `rake release`.
 
 ## Author/License

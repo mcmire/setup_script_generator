@@ -1,10 +1,18 @@
-#!/usr/bin/env bash
+### DON'T MODIFY ANYTHING BELOW THIS LINE! #####################################
 
-set -euo pipefail
+# This setup script was generated with setup_script_generator <%= version %>,
+# available on RubyGems.
+#
+# To regenerate this section, install the gem and run:
+#
+<% if provisions.any? -%>
+#     generate-setup \
+<%= provisions.map { |p| "#       -p #{p}" }.join(" \\\n") -%>
+<% else -%>
+#     generate-setup
+<% end -%>
 
 something_already_printed=0
-
-cd "$(dirname "$(dirname "$0")")"
 
 determine-platform() {
   local uname=$(uname)
@@ -163,16 +171,19 @@ run-provisions() {
 <% provisions.each do |provision| -%>
   provision-<%= provision.name %>
 <% end -%>
+  provision-project
 }
 
 <% end -%>
 setup() {
+  cd "$(dirname "$(dirname "$0")")"
   check-for-package-manager
 <%# TODO: Check if build-essential is installed on Debian? -%>
   install-development-libraries
 <% if provisions.any? -%>
   run-provisions
 <% end -%>
+  provision-project
   success "Done!"
 }
 

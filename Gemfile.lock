@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    setup_script_generator (0.1.0)
+    setup_script_generator (0.2.0)
 
 GEM
   remote: https://rubygems.org/

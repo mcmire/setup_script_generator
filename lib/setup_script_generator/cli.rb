@@ -89,6 +89,11 @@ module SetupScriptGenerator
           exit
         end
 
+        parser.on("-v", "--version", "Lists the version of setup_script_generator associated with this executable.") do
+          puts "generate-setup version #{SetupScriptGenerator::VERSION}"
+          exit
+        end
+
         parser.on("-h", "--help", "You're looking at it!") do
           puts parser
           exit

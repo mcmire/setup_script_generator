@@ -63,7 +63,7 @@ module SetupScriptGenerator
 
     def option_parser
       @_option_parser ||= OptionParser.new do |parser|
-        parser.banner = "#{$0} [OPTIONS] OUTPUT_FILE"
+        parser.banner = "#{$0} OUTPUT_FILE [OPTIONS]"
 
         parser.on(
           "-p",
@@ -75,12 +75,22 @@ module SetupScriptGenerator
           provision_names << provision_name
         end
 
-        parser.on("-n", "--dry-run", "Outputs the generated script instead of writing to the file.") do
+        parser.on(
+          "-n",
+          "--dry-run",
+          "Outputs the generated script instead of writing to the file."
+        ) do
           @dry_run = true
         end
 
-        parser.on("-l", "--list-provisions", "Lists the available provisions.") do
-          stdout.puts "Here are the provisions you can specify with --provision NAME:"
+        parser.on(
+          "-l",
+          "--list-provisions",
+          "Lists the available provisions."
+        ) do
+          stdout.puts(
+            "Here are the provisions you can specify with --provision NAME:"
+          )
 
           valid_provision_names.sort.each do |provision_name|
             stdout.puts "* #{provision_name}"
@@ -89,7 +99,12 @@ module SetupScriptGenerator
           exit
         end
 
-        parser.on("-v", "--version", "Lists the version of setup_script_generator associated with this executable.") do
+        parser.on(
+          "-v",
+          "--version",
+          "Lists the version of setup_script_generator associated with this " +
+          "executable."
+        ) do
           puts "generate-setup version #{SetupScriptGenerator::VERSION}"
           exit
         end

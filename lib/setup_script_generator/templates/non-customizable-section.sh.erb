@@ -6,11 +6,13 @@
 # To regenerate this section, install the gem and run:
 #
 <% if provisions.any? -%>
-#     generate-setup \
-<%= provisions.map { |p| "#       -p #{p}" }.join(" \\\n") -%>
-<% else -%>
+#     generate-setup <%= provisions.map { |p| "-p #{p.name}" }.join(" ") -%>
+<% else %>
 #     generate-setup
-<% end -%>
+<% end %>
+#
+
+# --- SETUP --------------------------------------------------------------------
 
 something_already_printed=0
 
@@ -162,19 +164,6 @@ install-development-libraries() {
   install rpm=zlib-devel
 }
 
-<% provisions.each do |provision| -%>
-<%= provision.code -%>
-
-<% end -%>
-<% if provisions.any? -%>
-run-provisions() {
-<% provisions.each do |provision| -%>
-  provision-<%= provision.name %>
-<% end -%>
-  provision-project
-}
-
-<% end -%>
 setup() {
   cd "$(dirname "$(dirname "$0")")"
   check-for-package-manager
@@ -186,5 +175,25 @@ setup() {
   provision-project
   success "Done!"
 }
+
+<% provisions.each do |provision| -%>
+# --- <%= provision.name.upcase %> <%= '-' * (73 - provision.name.length) %>
+
+<%= provision.code -%>
+
+<% end -%>
+<% if provisions.any? -%>
+run-provisions() {
+<% provisions.each do |provision| -%>
+  provision-<%= provision.name %>
+<% end -%>
+
+  if type provision-project &>/dev/null; then
+    provision-project
+  fi
+}
+<% end -%>
+
+# --- FIN ----------------------------------------------------------------------
 
 setup

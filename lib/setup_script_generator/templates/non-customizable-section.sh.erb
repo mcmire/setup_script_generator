@@ -6,10 +6,10 @@
 # To regenerate this section, install the gem and run:
 #
 <% if provisions.any? -%>
-#     generate-setup <%= provisions.map { |p| "-p #{p.name}" }.join(" ") -%>
-<% else %>
+#     generate-setup <%= provisions.map { |p| "-p #{p.name}" }.join(" ") %>
+<% else -%>
 #     generate-setup
-<% end %>
+<% end -%>
 #
 
 # --- SETUP --------------------------------------------------------------------

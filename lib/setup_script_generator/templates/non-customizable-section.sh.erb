@@ -168,7 +168,9 @@ setup() {
 <% if provisions.any? -%>
   run-provisions
 <% end -%>
-  provision-project
+  if type provision-project &>/dev/null; then
+    provision-project
+  fi
   success "Setup complete!"
 }
 

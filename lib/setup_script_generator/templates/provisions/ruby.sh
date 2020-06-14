@@ -1,26 +1,37 @@
 provision-ruby() {
-  if [[ -f .ruby-version ]]; then
+  if [[ -f .tool-versions ]]; then
+    REQUIRED_RUBY_VERSION=$(cat .tool-versions | grep '^ruby ' | sed -Ee 's/^ruby (.+)$/\1/')
+  elif [[ -f .ruby-version ]]; then
     REQUIRED_RUBY_VERSION=$(cat .ruby-version)
   else
     error "You don't seem to have a Ruby version set in your project."
     print-wrapped "\
-You'll need to create a .ruby-version file in your project before you can run
-this script.
-    "
+You'll need to create either a .tool-versions file or .ruby-version file in your
+project before you can run this script."
     exit 1
   fi
 
-  install-ruby-development-library
+  ensure-ruby-development-libraries-installed
   ensure-ruby-installed
-  install-ruby-dependencies
+  ensure-project-ruby-dependencies-installed
 }
 
-install-ruby-development-library() {
-  install apt=ruby-dev rpm=ruby-devel
+ensure-ruby-development-libraries-installed() {
+  local platform=$(determine-platform)
+
+  if [[ $platform == "linux" ]]; then
+    banner "Installing Ruby development libraries"
+    install apt=ruby-dev rpm=ruby-devel
+  fi
 }
 
 ensure-ruby-installed() {
-  if has-executable rbenv; then
+  if has-executable asdf; then
+    if ! (asdf current ruby | grep $REQUIRED_RUBY_VERSION'\>' &>/dev/null); then
+      banner "Installing Ruby $REQUIRED_RUBY_VERSION with asdf"
+      asdf install ruby $REQUIRED_RUBY_VERSION
+    fi
+  elif has-executable rbenv; then
     if ! (rbenv versions | grep $REQUIRED_RUBY_VERSION'\>' &>/dev/null); then
       banner "Installing Ruby $REQUIRED_RUBY_VERSION with rbenv"
       rbenv install --skip-existing "$REQUIRED_RUBY_VERSION"
@@ -29,10 +40,10 @@ ensure-ruby-installed() {
     PREFIX='' source /usr/local/share/chruby/chruby.sh
     if ! (chruby '' | grep $REQUIRED_RUBY_VERSION'\>' &>/dev/null); then
       if has-executable install-ruby; then
-      banner "Installing Ruby $REQUIRED_RUBY_VERSION with install-ruby"
+        banner "Installing Ruby $REQUIRED_RUBY_VERSION with install-ruby"
         install-ruby "$REQUIRED_RUBY_VERSION"
       else
-        error "Please install Ruby $REQUIRED_RUBY_VERSION"
+        error "Please use chruby to install Ruby $REQUIRED_RUBY_VERSION!"
       fi
     fi
   elif has-executable rvm; then
@@ -44,20 +55,21 @@ ensure-ruby-installed() {
   else
     error "You don't seem to have a Ruby manager installed."
     print-wrapped "\
-We recommend using rbenv. You can find instructions to install it here:
+We recommend using asdf. You can find instructions to install it here:
 
-    https://github.com/rbenv/rbenv#installation
+    https://asdf-vm.com
 
-Make sure to follow the instructions to configure your shell so that rbenv is
-automatically loaded.
-
-When you're done, open up a new terminal tab and re-run this script."
+When you're done, close and re-open this terminal tab and re-run this script."
     exit 1
   fi
 }
 
-install-ruby-dependencies() {
+ensure-project-ruby-dependencies-installed() {
   banner 'Installing Ruby dependencies'
-  gem install bundler -v '~> 1.0' --conservative
+
+  if [[ $USE_BUNDLER_1 ]]; then
+    gem install bundler -v '~> 1.0' --conservative
+  fi
+
   bundle check || bundle install
 }

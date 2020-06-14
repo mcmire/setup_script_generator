@@ -76,6 +76,7 @@ To release a new version, update `version.rb`, then run `rake release`.
 
 ## Author/License
 
-(c) 2019 Elliot Winkler (<elliot.winkler@gmail.com>).
+setup_script_generator is copyright © 2019-2020 Elliot Winkler
+(<elliot.winkler@gmail.com>).
 
 Available under the [MIT license](LICENSE.txt).

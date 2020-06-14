@@ -121,7 +121,7 @@ install() {
       sudo apt-get install -y "$package"
     fi
   elif has-executable yum; then
-    package="${yum_package:-$default_package}"
+    package="${rpm_package:-$default_package}"
 
     if [[ -n $package ]]; then
       sudo yum install -y "$package"
@@ -135,28 +135,24 @@ install() {
 check-for-package-manager() {
   local platform=$(determine-platform)
 
-  if [[ $platform == "linux" ]]; then
-    if ! has-executable apt-get; then
-      error "You don't seem to have a package manager installed."
-      print-wrapped "\
-The setup script assumes you're using Debian or a Debian-derived flavor of
-Linux (i.e. something with Apt). If this is not the case, then we would
+  if [[ $platform == "linux" ]] && ! has-executable apt-get && ! has-executable yum; then
+    # TODO: Check if build-essential is installed on Debian?
+    # TODO: Check if 'Development Tools' group is installed on RedHat?
+
+    error "You don't seem to have a package manager installed."
+    print-wrapped "\
+This setup script assumes you're using a flavor of Linux derived from Debian or
+RedHat (i.e. something with Apt or Yum). If this is not the case, then we would
 gladly take a PR fixing this!"
-      exit 1
-    fi
-  else
-    if ! has-executable brew; then
-      error "You don't seem to have Homebrew installed."
-      print-wrapped "\
-Follow the instructions here to do this:
-
-    http://brew.sh
-
-Then re-run this script."
-      exit 1
-    fi
-
+    exit 1
+  elif [[ $platform == "mac" ]] && ! has-executable brew; then
     # TODO: Check that OS X Command Line Tools are installed?
+
+    error "You don't seem to have Homebrew installed."
+    print-wrapped "\
+Visit <https://brew.sh> and follow the instructions there, then re-run this
+script."
+    exit 1
   fi
 }
 

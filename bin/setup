@@ -2,9 +2,32 @@
 
 set -euo pipefail
 
-something_already_printed=0
+### PROJECT SETUP ##############################################################
 
-cd "$(dirname "$(dirname "$0")")"
+# Feel free to add whatever functions or variables you want to add in this
+# section. You may also delete this section altogether if your project doesn't
+# need a custom setup.
+
+provision-project() {
+  # This function gets called automatically below.
+  # Feel free to remove these comments.
+  # If your project needs custom setup, then place that here.
+  true
+}
+
+### DON'T MODIFY ANYTHING BELOW THIS LINE! #####################################
+
+# This setup script was generated with setup_script_generator 0.2.1,
+# available on RubyGems.
+#
+# To regenerate this section, install the gem and run:
+#
+#     generate-setup
+#
+
+# --- SETUP --------------------------------------------------------------------
+
+something_already_printed=0
 
 determine-platform() {
   local uname=$(uname)
@@ -111,7 +134,7 @@ install() {
       sudo apt-get install -y "$package"
     fi
   elif has-executable yum; then
-    package="${yum_package:-$default_package}"
+    package="${rpm_package:-$default_package}"
 
     if [[ -n $package ]]; then
       sudo yum install -y "$package"
@@ -125,28 +148,24 @@ install() {
 check-for-package-manager() {
   local platform=$(determine-platform)
 
-  if [[ $platform == "linux" ]]; then
-    if ! has-executable apt-get; then
-      error "You don't seem to have a package manager installed."
-      print-wrapped "\
-The setup script assumes you're using Debian or a Debian-derived flavor of
-Linux (i.e. something with Apt). If this is not the case, then we would
+  if [[ $platform == "linux" ]] && ! has-executable apt-get && ! has-executable yum; then
+    # TODO: Check if build-essential is installed on Debian?
+    # TODO: Check if 'Development Tools' group is installed on RedHat?
+
+    error "You don't seem to have a package manager installed."
+    print-wrapped "\
+This setup script assumes you're using a flavor of Linux derived from Debian or
+RedHat (i.e. something with Apt or Yum). If this is not the case, then we would
 gladly take a PR fixing this!"
-      exit 1
-    fi
-  else
-    if ! has-executable brew; then
-      error "You don't seem to have Homebrew installed."
-      print-wrapped "\
-Follow the instructions here to do this:
-
-    http://brew.sh
-
-Then re-run this script."
-      exit 1
-    fi
-
+    exit 1
+  elif [[ $platform == "mac" ]] && ! has-executable brew; then
     # TODO: Check that OS X Command Line Tools are installed?
+
+    error "You don't seem to have Homebrew installed."
+    print-wrapped "\
+Visit <https://brew.sh> and follow the instructions there, then re-run this
+script."
+    exit 1
   fi
 }
 
@@ -154,79 +173,15 @@ install-development-libraries() {
   install rpm=zlib-devel
 }
 
-provision-ruby() {
-  if [[ -f .ruby-version ]]; then
-    REQUIRED_RUBY_VERSION=$(cat .ruby-version)
-  else
-    error "You don't seem to have a Ruby version set in your project."
-    print-wrapped "\
-You'll need to create a .ruby-version file in your project before you can run
-this script.
-    "
-    exit 1
-  fi
-
-  install-ruby-development-library
-  ensure-ruby-installed
-  install-ruby-dependencies
-}
-
-install-ruby-development-library() {
-  install apt=ruby-dev rpm=ruby-devel
-}
-
-ensure-ruby-installed() {
-  if has-executable rbenv; then
-    if ! (rbenv versions | grep $REQUIRED_RUBY_VERSION'\>' &>/dev/null); then
-      banner "Installing Ruby $REQUIRED_RUBY_VERSION with rbenv"
-      rbenv install --skip-existing "$REQUIRED_RUBY_VERSION"
-    fi
-  elif has-executable chruby-exec; then
-    PREFIX='' source /usr/local/share/chruby/chruby.sh
-    if ! (chruby '' | grep $REQUIRED_RUBY_VERSION'\>' &>/dev/null); then
-      if has-executable install-ruby; then
-      banner "Installing Ruby $REQUIRED_RUBY_VERSION with install-ruby"
-        install-ruby "$REQUIRED_RUBY_VERSION"
-      else
-        error "Please install Ruby $REQUIRED_RUBY_VERSION"
-      fi
-    fi
-  elif has-executable rvm; then
-    if ! (rvm list | grep $required_ruby_version'\>' &>/dev/null); then
-      banner "Installing Ruby $required_ruby_version with rvm"
-      rvm install $required_ruby_version
-      rvm use $required_ruby_version
-    fi
-  else
-    error "You don't seem to have a Ruby manager installed."
-    print-wrapped "\
-We recommend using rbenv. You can find instructions to install it here:
-
-    https://github.com/rbenv/rbenv#installation
-
-Make sure to follow the instructions to configure your shell so that rbenv is
-automatically loaded.
-
-When you're done, open up a new terminal tab and re-run this script."
-    exit 1
-  fi
-}
-
-install-ruby-dependencies() {
-  banner 'Installing Ruby dependencies'
-  gem install bundler -v '~> 1.0' --conservative
-  bundle check || bundle install
-}
-
-run-provisions() {
-  provision-ruby
-}
-
 setup() {
+  cd "$(dirname "$(dirname "$0")")"
   check-for-package-manager
   install-development-libraries
-  run-provisions
-  success "Done!"
+  provision-project
+  success "Setup complete!"
 }
+
+
+# --- FIN ----------------------------------------------------------------------
 
 setup

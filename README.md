@@ -1,82 +1,96 @@
 # Setup Script Generator
 
-Every project needs a [setup script][setup-script]. This is an executable that a
-new contributor to the project can run in order to quickly prepare his or her
-machine for development.
+Every project needs a [setup script][setup-script]
+to quickly ready new developers for contributing to the project.
+However, a good setup script is time-consuming to write:
 
 [setup-script]: https://thoughtbot.com/blog/shell-script-suggestions-for-speedy-setups
 
-The problem is that a good setup script is time-consuming to write:
+* The script must make sure that the proper version of your project's language is installed,
+  taking into account the usage of version managers.
+* The script must be idempotent,
+  installing new requirements while skipping over existing ones.
+* The script must provide friendly messages (successful or otherwise).
+* The script must be quick to run.
+* The script must be usable on multiple platforms.
+* The script must be easy to read and maintain.
 
-* The script must be portable, which means handling installation of software
-  using package managers on different platforms.
-* The script must be snappy, which (along with the previous point) dictates the
-  use of Bash.
-* The script must make sure that the proper version of your project's
-  implementation language is installed, and if said language has version
-  managers (such as for Ruby or Node), the script must take them into account
-  as well.
-* The script must provide friendly errors if any checks fail.
-  (Bonus points for colors and/or emoji.)
-* The script must be idempotent, so that if changes to the development are
-  made, the script can be run again, and any requirements that are already
-  satisfied will be skipped, while new requirements will be installed.
-* The script must be easy to read and maintain in the future.
-
-Given this, this project provides a way to generate a setup script for your own
-project, so that you can keep all of your teammates on the same page and offer
-them a nice experience going forward.
-
-## Installation
-
-Currently, the generator is available through a Ruby gem. You can install this
-gem by first installing Ruby, then running:
-
-    gem install setup_script_generator
+Given these constraints,
+this project generates a setup script that you can place in your own project.
+This script is implemented in Bash
+so that it is is performant, portable, and maintainable.
 
 ## Usage
 
-After installing the gem, navigate to your project. Generally, setup scripts are
-kept in `bin`, so to generate a script, run:
+Currently, the generator is available through a Ruby gem.
+You can install this gem by first installing Ruby, then by running:
+
+```
+gem install setup_script_generator
+```
+
+After installing the gem, navigate to your project.
+You now have the `generate-setup` command
+which will allow you to generate a setup script where you like.
+A common location is `bin/setup`, so you could say:
 
     generate-setup bin/setup
 
-Now, by default, this won't do a whole lot. That's because a setup script is
-much more useful with *provisions*, which add checks and steps for a particular
-language, framework, or service. For instance, if your project requires Ruby,
-then you'd want to say:
+Now open up this file in your editor.
+By default, this script is fairly empty,
+although it does offer a section at the top
+to which you can add custom code:
 
-    generate-setup bin/setup --provision ruby
+``` bash
+provision-project() {
+  # ...
+}
+```
 
-You can add more than one provision if that's what you need:
+While it is perfectly fine to update this function,
+you will probably find it more useful to run `generate-setup` with a set of *provisions*.
+These extend your script with checks and installation steps
+for languages, frameworks, or services on which your project relies.
+For instance, if your project requires Ruby,
+then you'd want to run:
 
-    generate-setup bin/setup --provision ruby --provision node
+```
+generate-setup bin/setup --provision ruby
+```
 
-You can get a list of available provisions by running:
+(Don't worry, if you've already run `generate-setup`,
+you can re-run it at any point in the future
+to add or remove provisions.)
 
-    generate-setup --list-provisions
+You can also use more than one provision if that's what you need:
 
-And if you want to view the setup script before you generate it, you can tack
-`--dry-run` to the end of the command. For instance:
+```
+generate-setup bin/setup --provision ruby --provision node
+```
 
-    generate-setup bin/setup --provision ruby --dry-run
+And you can get a list of available provisions by running:
+
+```
+generate-setup --list-provisions
+```
 
 Finally, to see the full list of options, run:
 
-    generate-setup --help
+```
+generate-setup --help
+```
 
 ## Development
 
-Naturally, this gem comes with its own setup script you can use to get started.
-Just run:
+Naturally, this project comes with its own setup script.
+Simply run this command to get started:
 
-    bin/setup
-
-To release a new version, update `version.rb`, then run `rake release`.
+```
+bin/setup
+```
 
 ## Author/License
 
-setup_script_generator is copyright © 2019-2020 Elliot Winkler
-(<elliot.winkler@gmail.com>).
-
-Available under the [MIT license](LICENSE.txt).
+Setup Script Generator is copyright © 2019-2020 Elliot Winkler
+(<elliot.winkler@gmail.com>)
+and is released under the [MIT license](LICENSE.txt).

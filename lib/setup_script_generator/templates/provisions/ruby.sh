@@ -1,4 +1,6 @@
 provision-ruby() {
+  USE_BUNDLER_1=0
+
   if [[ -f .tool-versions ]]; then
     REQUIRED_RUBY_VERSION=$(cat .tool-versions | grep '^ruby ' | sed -Ee 's/^ruby (.+)$/\1/')
   elif [[ -f .ruby-version ]]; then

@@ -185,10 +185,6 @@ run-provisions() {
 <% provisions.each do |provision| -%>
   provision-<%= provision.name %>
 <% end -%>
-
-  if type provision-project &>/dev/null; then
-    provision-project
-  fi
 }
 <% end -%>
 

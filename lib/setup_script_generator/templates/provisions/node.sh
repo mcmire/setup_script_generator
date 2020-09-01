@@ -1,6 +1,18 @@
+read-required-node-version-for-asdf() {
+  (cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/') || \
+    echo ''
+}
+
 provision-node() {
   if [[ -f .tool-versions ]]; then
-    REQUIRED_NODE_VERSION=$(cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/')
+    REQUIRED_NODE_VERSION=$(read-required-node-version-for-asdf)
+
+    if [[ -z $REQUIRED_NODE_VERSION ]]; then
+      error "Could not read required Node version."
+      print-wrapped "\
+Please check that .tool-versions is correct before re-running this script."
+      exit 1
+    fi
   elif [[ -f .node-version ]]; then
     REQUIRED_NODE_VERSION=$(cat .node-version)
   elif [[ -f .nvmrc ]]; then

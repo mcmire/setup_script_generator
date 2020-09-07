@@ -2,14 +2,16 @@ provision-ruby() {
   USE_BUNDLER_1=0
 
   if [[ -f .tool-versions ]]; then
-    REQUIRED_RUBY_VERSION=$(cat .tool-versions | grep '^ruby ' | sed -Ee 's/^ruby (.+)$/\1/')
+    REQUIRED_RUBY_VERSION=$(cat .tool-versions | grep '^ruby ' | head -n 1 | sed -Ee 's/^ruby (.+)$/\1/')
   elif [[ -f .ruby-version ]]; then
-    REQUIRED_RUBY_VERSION=$(cat .ruby-version)
-  else
-    error "You don't seem to have a Ruby version set in your project."
+    REQUIRED_RUBY_VERSION=$(cat .ruby-version | head -n 1 | sed -Ee 's/^ruby-([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)$/\1/')
+  fi
+
+  if [[ -z $REQUIRED_RUBY_VERSION ]]; then
+    error "Could not determine required Ruby version for this project."
     print-wrapped "\
-You'll need to create either a .tool-versions file or .ruby-version file in your
-project before you can run this script."
+Your project needs to include either a valid .tool-versions file with a 'ruby'
+line or a valid .ruby-version file."
     exit 1
   fi
 

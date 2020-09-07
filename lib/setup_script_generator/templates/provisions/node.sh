@@ -1,27 +1,17 @@
-read-required-node-version-for-asdf() {
-  (cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/') || \
-    echo ''
-}
-
 provision-node() {
   if [[ -f .tool-versions ]]; then
-    REQUIRED_NODE_VERSION=$(read-required-node-version-for-asdf)
-
-    if [[ -z $REQUIRED_NODE_VERSION ]]; then
-      error "Could not read required Node version."
-      print-wrapped "\
-Please check that .tool-versions is correct before re-running this script."
-      exit 1
-    fi
+    REQUIRED_NODE_VERSION=$(cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/')
   elif [[ -f .node-version ]]; then
     REQUIRED_NODE_VERSION=$(cat .node-version)
   elif [[ -f .nvmrc ]]; then
     REQUIRED_NODE_VERSION=$(cat .nvmrc)
-  else
-    error "You don't seem to have a Node version set in your project."
+  fi
+
+  if [[ -z $REQUIRED_NODE_VERSION ]]; then
+    error "Could not determine required Node version for this project."
     print-wrapped "\
-You'll need to create either a .tool-versions file or .nvmrc file in your
-project before you can run this script."
+Your project needs to include either a valid .tool-versions file with a 'nodejs'
+line or a valid .node-version or .nvimrc file."
     exit 1
   fi
 

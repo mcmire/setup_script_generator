@@ -15,7 +15,10 @@ project before you can run this script."
 
   ensure-ruby-development-libraries-installed
   ensure-ruby-installed
-  ensure-project-ruby-dependencies-installed
+
+  if [[ -f Gemfile ]]; then
+    ensure-project-ruby-dependencies-installed
+  fi
 }
 
 ensure-ruby-development-libraries-installed() {

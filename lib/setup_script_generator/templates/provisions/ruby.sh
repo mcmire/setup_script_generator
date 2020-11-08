@@ -73,7 +73,7 @@ ensure-project-ruby-dependencies-installed() {
   banner 'Installing Ruby dependencies'
 
   if [[ $USE_BUNDLER_1 -eq 1 ]] && (! has-bundler || ! [[ $(bundle -v) =~ '^Bundler version 1\.' ]]); then
-    gem install bundler -v '~> 1.0'
+    gem install bundler:'~> 1.0'
   elif ! has-bundler; then
     gem install bundler
   fi

@@ -17,7 +17,7 @@ provision-project() {
 
 ### DON'T MODIFY ANYTHING BELOW THIS LINE! #####################################
 
-# This setup script was generated with setup_script_generator 0.4.0,
+# This setup script was generated with setup_script_generator 0.4.1,
 # available on RubyGems.
 #
 # To regenerate this section, install the gem and run:
@@ -185,6 +185,8 @@ setup() {
 }
 
 # --- RUBY ---------------------------------------------------------------------
+
+REQUIRED_RUBY_VERSION=
 
 provision-ruby() {
   USE_BUNDLER_1=0

@@ -1,3 +1,5 @@
+REQUIRED_RUBY_VERSION=
+
 provision-ruby() {
   USE_BUNDLER_1=0
 

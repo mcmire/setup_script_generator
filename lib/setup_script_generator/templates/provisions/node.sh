@@ -1,3 +1,5 @@
+REQUIRED_NODE_VERSION=
+
 provision-node() {
   if [[ -f .tool-versions ]]; then
     REQUIRED_NODE_VERSION=$(cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/')

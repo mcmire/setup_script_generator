@@ -91,6 +91,6 @@ bin/setup
 
 ## Author/License
 
-Setup Script Generator is copyright © 2019-2020 Elliot Winkler
+Setup Script Generator is copyright © 2019-2021 Elliot Winkler
 (<elliot.winkler@gmail.com>)
 and is released under the [MIT license](LICENSE.txt).

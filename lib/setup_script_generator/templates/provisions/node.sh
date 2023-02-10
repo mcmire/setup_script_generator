@@ -2,7 +2,7 @@ REQUIRED_NODE_VERSION=
 
 provision-node() {
   if [[ -f .tool-versions ]]; then
-    REQUIRED_NODE_VERSION=$(cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/')
+    REQUIRED_NODE_VERSION=$((cat .tool-versions | grep '^nodejs ' | sed -Ee 's/^nodejs (.+)$/\1/') || echo '')
   elif [[ -f .node-version ]]; then
     REQUIRED_NODE_VERSION=$(cat .node-version)
   elif [[ -f .nvmrc ]]; then
@@ -55,7 +55,7 @@ ensure-project-node-dependencies-installed() {
     banner 'Installing Node dependencies'
     npm install
   elif [[ -f yarn.lock ]]; then
-    if ! type yarn &>/dev/null; then
+    if ! type yarn &>/dev/null || ! yarn --version &>/dev/null; then
       banner 'Installing Yarn 1'
       npm install -g yarn
     fi

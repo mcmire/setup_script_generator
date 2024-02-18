@@ -13,7 +13,7 @@ provision-node() {
     error 'Could not determine required Node version for this project.'
     print-wrapped "\
 Your project needs to include either a valid .tool-versions file with a 'nodejs'
-line or a valid .node-version or .nvimrc file."
+line or a valid .node-version or .nvmrc file."
     exit 1
   fi
 
@@ -56,8 +56,8 @@ ensure-project-node-dependencies-installed() {
     npm install
   elif [[ -f yarn.lock ]]; then
     if ! type yarn &>/dev/null || ! yarn --version &>/dev/null; then
-      banner 'Installing Yarn 1'
-      npm install -g yarn
+      banner 'Enabling Yarn'
+      corepack enable
     fi
     banner 'Installing Node dependencies'
     yarn install
